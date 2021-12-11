@@ -28,6 +28,7 @@ parts:
     source: .
     build-packages:
       - wget
+      - dpkg
     stage-packages:
       - to arm64:
         - libusb-1.0-0:arm64
