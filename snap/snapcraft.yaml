@@ -14,10 +14,25 @@ confinement: strict # use 'strict' once you have the right plugs and slots
 
 parts:
   repetier-server:
-    plugin: dump
-    source: https://download3.repetier.com/files/server/debian-${SNAPCRAFT_TARGET_ARCH}/Repetier-Server-${SNAPCRAFT_PROJECT_VERSION}-Linux.deb
+    plugin: nil
+    override-build: |
+      case $SNAPCRAFT_TARGET_ARCH in
+        arm64)
+          wget https://download3.repetier.com/files/server/debian-arm64hf/Repetier-Server-${SNAPCRAFT_PROJECT_VERSION}-Linux.deb
+          ;;
+        amd64)
+          wget https://download3.repetier.com/files/server/debian-amd64/Repetier-Server-${SNAPCRAFT_PROJECT_VERSION}-Linux.deb
+          ;;
+      esac
+      dpkg -x Repetier-Server-${SNAPCRAFT_PROJECT_VERSION}-Linux.deb $SNAPCRAFT_PART_INSTALL/
+    source: .
+    build-packages:
+      - wget
     stage-packages:
-      - libusb-1.0-0
+      - to arm64:
+        - libusb-1.0-0:arm64
+      - to amd64:
+        - libusb-1.0-0:amd64
   config:
     plugin: dump
     source: config
