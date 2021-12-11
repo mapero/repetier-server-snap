@@ -1,0 +1,40 @@
+name: repetier-server # you probably want to 'snapcraft register <name>'
+base: core20 # the base snap is the execution environment for this snap
+version: '1.2.1' # just for humans, typically '1.2+git' or '1.3.2'
+summary: Inofficial repetier server snap # 79 char long summary
+description: |
+  Repetier-Server Free and Pro are professional all-in-one solutions to control and manage all
+  your 3d printers at the same time and to get the most out of it. Designed for manufacturers,
+  professionals, makers and educators who value quality, safety and functionality. Manage all
+  printers and files clearly in one software. We want 3D printing to be as easy as possible and
+  make it fun. Benefit from our competence in 3d printing since 2011.
+
+grade: devel # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+
+parts:
+  repetier-server:
+    plugin: dump
+    source: https://download3.repetier.com/files/server/debian-${SNAPCRAFT_TARGET_ARCH}/Repetier-Server-${SNAPCRAFT_PROJECT_VERSION}-Linux.deb
+    stage-packages:
+      - libusb-1.0-0
+  config:
+    plugin: dump
+    source: config
+
+apps:
+  repetier-server:
+    environment:
+      LC_ALL: C
+    command: usr/local/Repetier-Server/bin/RepetierServer -c $SNAP/RepetierServer.xml
+    plugs:
+      - network
+      - network-bind
+      - serial-port
+    #daemon: simple
+
+layout:
+  /var/lib/Repetier-Server:
+    bind: $SNAP_DATA
+  /usr/local/Repetier-Server:
+    bind: $SNAP/usr/local/Repetier-Server
